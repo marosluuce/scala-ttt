@@ -1,17 +1,15 @@
-class Rules(game_board: Board) {
-  val board = game_board
-
-  def winnerIs(sym: String) = {
-    val b = board.getBoard
-    sym match {
-      case symbol if s"${sym}${sym}${sym}      " == b ||
-                     s"   ${sym}${sym}${sym}   " == b ||
-                     s"      ${sym}${sym}${sym}" == b ||
-                     s"${sym}  ${sym}  ${sym}  " == b ||
-                     s" ${sym}  ${sym}  ${sym} " == b ||
-                     s"  ${sym}  ${sym}  ${sym}" == b ||
-                     s"${sym}   ${sym}   ${sym}" == b ||
-                     s"  ${sym} ${sym} ${sym}  " == b => true
+class Rules(val board: Board) {
+  def winnerIs(symbol: String) = {
+    val s = symbol.charAt(0)
+    board.getBoard.toVector match {
+      case Vector(`s`, `s`, `s`, _, _, _, _, _, _) |
+           Vector(_, _, _, `s`, `s`, `s`, _, _, _) |
+           Vector(_, _, _, _, _, _, `s`, `s`, `s`) |
+           Vector(`s`, _, _, `s`, _, _, `s`, _, _) |
+           Vector(_, `s`, _, _, `s`, _, _, `s`, _) |
+           Vector(_, _, `s`, _, _, `s`, _, _, `s`) |
+           Vector(`s`, _, _, _, `s`, _, _, _, `s`) |
+           Vector(_, _, `s`, _, `s`, _, `s`, _, _) => true
       case _ => false
       }
   }

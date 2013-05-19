@@ -8,4 +8,8 @@ class GameSpec extends FunSpec {
   it("has a board") {
     expectResult(classOf[Board]) ((new Game).board.getClass)
   }
+
+  it("has rules") {
+    expectResult(classOf[Rules]) ((new Game).rules.getClass)
+  }
 }

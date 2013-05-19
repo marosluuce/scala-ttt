@@ -78,19 +78,27 @@ class RulesSpec extends FunSpec {
 
   describe("gameover") {
     it("is true if the board is full") {
-      val board = new Board
-      for (i <- 1 to 9) { board.move(i, "x") }
+      val board = new MockBoard
       val rules = new Rules(board)
+      board.isFull = true
 
       expectResult(true) (rules.gameover)
     }
 
     it("is true if there is a winner") {
-      val board = new Board
-      for (i <- 1 to 3) { board.move(i, "x") }
+      val board = new MockBoard
       val rules = new Rules(board)
+      board.currentBoard = "xoxxoxxox"
 
       expectResult(true) (rules.gameover)
+    }
+
+    it("is false if there is no winner and the board is not full") {
+      val board = new MockBoard
+      val rules = new Rules(board)
+      board.currentBoard = "xxo      "
+
+      expectResult(false) (rules.gameover)
     }
   }
 

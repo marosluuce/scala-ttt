@@ -23,8 +23,10 @@ class BoardSpec extends FunSpec {
   describe("getBoard") {
     it("gets the board") {
       val board = new Board
-
       expectResult("         ") (board.getBoard)
+
+      for(i <- 1 to 9) { board.move(i, "x") }
+      expectResult("xxxxxxxxx") (board.getBoard)
     }
   }
 
@@ -62,9 +64,7 @@ class BoardSpec extends FunSpec {
 
     it("is true if all the squares are filled") {
       val board = new Board
-      for (i <- 1 to 9) {
-        board.move(i, "x")
-      }
+      for (i <- 1 to 9) { board.move(i, "x") }
 
       expectResult(true) (board.full)
     }
