@@ -1,5 +1,7 @@
 import org.scalatest.FunSpec
 
+import com.github.marosluuce.scalattt._
+
 class BoardSpec extends FunSpec {
   describe("move") {
     it("moves by setting a square to a value") {

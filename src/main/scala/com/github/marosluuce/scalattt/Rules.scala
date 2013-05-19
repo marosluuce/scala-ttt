@@ -1,3 +1,5 @@
+package com.github.marosluuce.scalattt
+
 class Rules(val board: Board) {
   def winnerIs(sym: String) = board.getBoard match {
     case Vector(`sym`, `sym`, `sym`, _, _, _, _, _, _) |

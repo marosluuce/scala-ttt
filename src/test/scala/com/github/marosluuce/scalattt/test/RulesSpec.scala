@@ -1,5 +1,7 @@
 import org.scalatest.FunSpec
 
+import com.github.marosluuce.scalattt._
+
 class RulesSpec extends FunSpec {
 
   describe("winnerIs") {
@@ -126,12 +128,4 @@ class RulesSpec extends FunSpec {
       expectResult(true) (rules.draw)
     }
   }
-}
-
-class MockBoard extends Board {
-  var currentBoard = Vector[String]()
-  var isFull = false
-
-  override def getBoard = currentBoard
-  override def full = isFull
 }
