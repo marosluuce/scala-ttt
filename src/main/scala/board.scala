@@ -3,9 +3,9 @@ import scala.collection.mutable._
 class Board {
   private var squares = Buffer.fill(9)(" ")
 
-  def move(square: Int, value: String) = {
-    squares.update(square-1, value)
-  }
+  def move(square: Int, value: String) = squares.update(square-1, value)
+
+  def undoMove(square: Int) = squares.update(square-1, " ")
 
   def getBoard = ("" /: squares)(_+_)
 
@@ -17,4 +17,6 @@ class Board {
   }
 
   def validMove(square: Int) = getAvailableSquares.contains(square)
+
+  def full = (true /: squares)(_ && _ != " ")
 }
