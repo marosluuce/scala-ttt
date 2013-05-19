@@ -12,7 +12,7 @@ class Rules(val board: Board) {
   }
 
   def gameover = board.full ||
-                 (false /: board.getBoard.toList.distinct.filter(_!=' ')) {
+                 (false /: board.getBoard.distinct.filter(_!=" ")) {
                    case (acc, sym) => acc || winnerIs(sym.toString)
                  }
 
