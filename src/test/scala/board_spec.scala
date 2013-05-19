@@ -4,9 +4,10 @@ class BoardSpec extends FunSpec {
   describe("move") {
     it("moves by setting a square to a value") {
       val board = new Board
-      board.move(1, "x")
+      expectResult(" ") (board.getBoard(0))
 
-      expectResult("x        ") (board.getBoard)
+      board.move(1, "x")
+      expectResult("x") (board.getBoard(0))
     }
   }
 
@@ -16,25 +17,27 @@ class BoardSpec extends FunSpec {
       board.move(1, "x")
       board.undoMove(1)
 
-      expectResult("         ") (board.getBoard)
+      expectResult(" ") (board.getBoard(0))
     }
   }
 
   describe("getBoard") {
     it("gets the board") {
       val board = new Board
-      expectResult("         ") (board.getBoard)
+      expectResult(Vector(" ", " ", " ", " ", " ", " ", " ", " ", " ")) (board.getBoard)
 
       for(i <- 1 to 9) { board.move(i, "x") }
-      expectResult("xxxxxxxxx") (board.getBoard)
+      expectResult(Vector("x", "x", "x", "x", "x", "x", "x", "x", "x")) (board.getBoard)
     }
   }
 
   describe("getAvailableSquares") {
     it("gets the available squares") {
       val board = new Board
-
       expectResult(Vector(1, 2, 3, 4, 5, 6, 7, 8, 9)) (board.getAvailableSquares)
+
+      board.move(1, "x")
+      expectResult(Vector(2, 3, 4, 5, 6, 7, 8, 9)) (board.getAvailableSquares)
     }
   }
 

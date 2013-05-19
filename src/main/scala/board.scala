@@ -1,13 +1,13 @@
 import scala.collection.mutable._
 
 class Board {
-  private var squares = Buffer.fill(9)(" ")
+  private val squares = Buffer.fill(9)(" ")
 
   def move(square: Int, value: String) = squares.update(square-1, value)
 
   def undoMove(square: Int) = squares.update(square-1, " ")
 
-  def getBoard = ("" /: squares)(_+_)
+  def getBoard = squares.toVector
 
   def getAvailableSquares = {
     (Vector[Int]() /: squares.zipWithIndex) {
