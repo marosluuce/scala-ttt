@@ -1,15 +1,17 @@
+package com.github.marosluuce.scalattt.test
+
 import org.scalatest.FunSpec
 
-import com.github.marosluuce.scalattt._
+import com.github.marosluuce.scalattt.Board
 
 class BoardSpec extends FunSpec {
   describe("move") {
     it("moves by setting a square to a value") {
       val board = new Board
-      expectResult(" ") (board.getBoard(0))
+      expectResult(" ") (board.squares(0))
 
       board.move(1, "x")
-      expectResult("x") (board.getBoard(0))
+      expectResult("x") (board.squares(0))
     }
   }
 
@@ -19,17 +21,17 @@ class BoardSpec extends FunSpec {
       board.move(1, "x")
       board.undoMove(1)
 
-      expectResult(" ") (board.getBoard(0))
+      expectResult(" ") (board.squares(0))
     }
   }
 
   describe("getBoard") {
     it("gets the board") {
       val board = new Board
-      expectResult(Vector(" ", " ", " ", " ", " ", " ", " ", " ", " ")) (board.getBoard)
+      expectResult(Vector(" ", " ", " ", " ", " ", " ", " ", " ", " ")) (board.squares)
 
       for(i <- 1 to 9) { board.move(i, "x") }
-      expectResult(Vector("x", "x", "x", "x", "x", "x", "x", "x", "x")) (board.getBoard)
+      expectResult(Vector("x", "x", "x", "x", "x", "x", "x", "x", "x")) (board.squares)
     }
   }
 
@@ -72,6 +74,76 @@ class BoardSpec extends FunSpec {
       for (i <- 1 to 9) { board.move(i, "x") }
 
       expectResult(true) (board.full)
+    }
+  }
+
+  describe("winnerIs") {
+    it("is true for 'xxx      '") {
+      val board = new Board
+      val winningCombos = Vector(Vector("x", "x", "x", " ", " ", " ", " ", " ", " "),
+                                 Vector(" ", " ", " ", "x", "x", "x", " ", " ", " "),
+                                 Vector(" ", " ", " ", " ", " ", " ", "x", "x", "x"),
+                                 Vector("x", " ", " ", "x", " ", " ", "x", " ", " "),
+                                 Vector(" ", "x", " ", " ", "x", " ", " ", "x", " "),
+                                 Vector(" ", " ", "x", " ", " ", "x", " ", " ", "x"),
+                                 Vector("x", " ", " "," ", "x", " ",  " ", " ", "x"),
+                                 Vector(" ", " ", "x", " ", "x", " ", "x", " ", " "))
+      for(combo <- winningCombos) {
+        board.squares = combo
+        expectResult(Some("x")) (board.winner)
+      }
+    }
+
+    it("is false for 'xxo'") {
+      val board = new Board
+      board.squares = Vector("x", "x", "o", " ", " ", " ", " ", " ", " ")
+
+      expectResult(None) (board.winner)
+    }
+  }
+
+  describe("gameover") {
+    it("is true if the board is full") {
+      val board = new Board
+      board.squares = Vector("x", "o", "x", "x", "o", "x", "x", "o", "x")
+
+      expectResult(true) (board.gameover)
+    }
+
+    it("is true if there is a winner") {
+      val board = new Board
+      board.squares = Vector("x", "o", "x", "x", "o", "x", "x", "o", "x")
+
+      expectResult(true) (board.gameover)
+    }
+
+    it("is false if there is no winner and the board is not full") {
+      val board = new Board
+      board.squares = Vector("x", "x", "o", " ", " ", " ", " ", " ", " ")
+
+      expectResult(false) (board.gameover)
+    }
+  }
+
+  describe("draw") {
+    it("is false if the board is not full") {
+      val board = new Board
+
+      expectResult(false) (board.draw)
+    }
+
+    it("is false if there is a winner") {
+      val board = new Board
+      board.squares = Vector("x", "x", "x", " ", " ", " ", " ", " ", " ")
+
+      expectResult(false) (board.draw)
+    }
+
+    it("is true if the board is full and there is no winner") {
+      val board = new Board
+      board.squares = Vector("x", "o", "x", "x", "o", "x", "o", "x", "o")
+
+      expectResult(true) (board.draw)
     }
   }
 }

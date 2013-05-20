@@ -1,6 +1,9 @@
+package com.github.marosluuce.scalattt.test
+
 import org.scalatest.FunSpec
 
-import com.github.marosluuce.scalattt._
+import com.github.marosluuce.scalattt.Board
+import com.github.marosluuce.scalattt.Game
 
 class GameSpec extends FunSpec {
   it("creates a new copy of the game") {
@@ -9,9 +12,5 @@ class GameSpec extends FunSpec {
 
   it("has a board") {
     expectResult(classOf[Board]) ((new Game).board.getClass)
-  }
-
-  it("has rules") {
-    expectResult(classOf[Rules]) ((new Game).rules.getClass)
   }
 }
