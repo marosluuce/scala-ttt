@@ -25,16 +25,6 @@ class BoardSpec extends FunSpec {
     }
   }
 
-  describe("getBoard") {
-    it("gets the board") {
-      val board = new Board
-      expectResult(Vector(" ", " ", " ", " ", " ", " ", " ", " ", " ")) (board.squares)
-
-      for(i <- 1 to 9) { board.move(i, "x") }
-      expectResult(Vector("x", "x", "x", "x", "x", "x", "x", "x", "x")) (board.squares)
-    }
-  }
-
   describe("getAvailableSquares") {
     it("gets the available squares") {
       val board = new Board
@@ -77,7 +67,7 @@ class BoardSpec extends FunSpec {
     }
   }
 
-  describe("winnerIs") {
+  describe("winner") {
     it("is true for 'xxx      '") {
       val board = new Board
       val winningCombos = Vector(Vector("x", "x", "x", " ", " ", " ", " ", " ", " "),
@@ -94,7 +84,7 @@ class BoardSpec extends FunSpec {
       }
     }
 
-    it("is false for 'xxo'") {
+    it("is false for 'xxo      '") {
       val board = new Board
       board.squares = Vector("x", "x", "o", " ", " ", " ", " ", " ", " ")
 

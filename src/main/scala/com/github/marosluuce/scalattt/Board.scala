@@ -24,7 +24,7 @@ class Board {
 
   def full = !squares.contains(Board.emptySquare)
 
-  def winner = boardSymbols.map(winnerIs(_)).filter(_!=null).headOption
+  def winner = Option(winnerIs)
 
   def gameover = full || winner.nonEmpty
 
@@ -32,17 +32,18 @@ class Board {
 
   private[this] def squareIsEmpty(index: Int) = squares(index) == Board.emptySquare
 
-  private[this] def boardSymbols = squares.distinct.filter(_!=Board.emptySquare)
-
-  private[this] def winnerIs(sym: String) = squares match {
-    case Vector(`sym`, `sym`, `sym`, _, _, _, _, _, _) |
-         Vector(_, _, _, `sym`, `sym`, `sym`, _, _, _) |
-         Vector(_, _, _, _, _, _, `sym`, `sym`, `sym`) |
-         Vector(`sym`, _, _, `sym`, _, _, `sym`, _, _) |
-         Vector(_, `sym`, _, _, `sym`, _, _, `sym`, _) |
-         Vector(_, _, `sym`, _, _, `sym`, _, _, `sym`) |
-         Vector(`sym`, _, _, _, `sym`, _, _, _, `sym`) |
-         Vector(_, _, `sym`, _, `sym`, _, `sym`, _, _) => sym
+  private[this] def winnerIs = squares match {
+    case Vector(x, y, z, _, _, _, _, _, _) if sameSymbol(x, y, z) => x
+    case Vector(_, _, _, x, y, z, _, _, _) if sameSymbol(x, y, z) => x
+    case Vector(_, _, _, _, _, _, x, y, z) if sameSymbol(x, y, z) => x
+    case Vector(x, _, _, y, _, _, z, _, _) if sameSymbol(x, y, z) => x
+    case Vector(_, x, _, _, y, _, _, z, _) if sameSymbol(x, y, z) => x
+    case Vector(_, _, x, _, _, y, _, _, z) if sameSymbol(x, y, z) => x
+    case Vector(x, _, _, _, y, _, _, _, z) if sameSymbol(x, y, z) => x
+    case Vector(_, _, x, _, y, _, z, _, _) if sameSymbol(x, y, z) => x
     case _ => null
   }
+
+  private[this] def sameSymbol(x: Any, y: Any, z: Any) =
+    x != Board.emptySquare && x == y && x == z
 }
