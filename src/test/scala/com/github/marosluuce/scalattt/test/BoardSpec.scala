@@ -132,4 +132,14 @@ class BoardSpec extends FunSpec with BeforeAndAfterEach {
       expectResult(Vector("1", "2", "3", "4", "5", "6", "7", "8", "9")) (board.formatted)
     }
   }
+
+  describe("movesMade") {
+    it("is the number of moves made") {
+      board.squares = Vector.fill(9)(" ")
+      expectResult(0) (board.movesMade)
+
+      board.move(1, "x")
+      expectResult(1) (board.movesMade)
+    }
+  }
 }

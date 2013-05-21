@@ -20,6 +20,21 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
     cli = new Cli(game, io)
   }
 
+  //describe("takeTurn") {
+    //it("makes a move and draws the board") {
+      //io.input = List("1")
+      //cli.takeTurn
+
+      //expectResult("x") (game.board.squares(0))
+      //println(io.output)
+      //assert(io.output.contains(Cli.boardRow.format("x", "2", "3")))
+    //}
+  //}
+
+  //describe("setPlayers") {
+    //it("")
+  //}
+
   describe("promptMove") {
     it("displays a move prompt") {
       io.input = List("1")

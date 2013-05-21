@@ -21,6 +21,12 @@ object Cli {
     //}
 
 class Cli(val game: Game, val io: Io) {
+  //def takeTurn = {
+    //val player = new Player("x")
+    //game.move(player.requestMove(promptMove _), player.symbol)
+    //printBoard
+  //}
+
   def promptMove = {
     promptAndValidateInput(io.getInt _, Cli.movePrompt)
   }

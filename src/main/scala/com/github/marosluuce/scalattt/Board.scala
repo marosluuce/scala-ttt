@@ -37,7 +37,7 @@ class Board {
     case (_, index) => s"${index+1}"
   }
 
-  private[this] def squareIsEmpty(index: Int) = squares(index) == Board.emptySquare
+  def movesMade = squares.count(_!=Board.emptySquare)
 
   private[this] def winnerIs = squares match {
     case Vector(x, y, z, _, _, _, _, _, _) if sameSymbol(x, y, z) => x
