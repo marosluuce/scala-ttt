@@ -1,5 +1,9 @@
 package com.github.marosluuce.scalattt
 
+object Io {
+  def apply() = new Io
+}
+
 class Io {
   def getLine = readLine
 

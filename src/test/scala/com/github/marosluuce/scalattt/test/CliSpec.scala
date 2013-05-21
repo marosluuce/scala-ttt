@@ -1,6 +1,7 @@
 package com.github.marosluuce.scalattt.test
 
 import org.scalatest.FunSpec
+import org.scalatest.BeforeAndAfterEach
 
 import com.github.marosluuce.scalattt.Cli
 import com.github.marosluuce.scalattt.Game
@@ -8,21 +9,19 @@ import com.github.marosluuce.scalattt.Io
 
 import com.github.marosluuce.scalattt.test.mock.MockIo
 
-class CliSpec extends FunSpec {
-  it("has a game") {
-    val cli = new Cli(new Game, null)
-    expectResult(classOf[Game]) (cli.game.getClass)
-  }
+class CliSpec extends FunSpec with BeforeAndAfterEach {
+  var io: MockIo = _
+  var game: Game = _
+  var cli: Cli = _
 
-  it("has io") {
-    val cli = new Cli(new Game, new Io)
-    expectResult(classOf[Io]) (cli.io.getClass)
+  override def beforeEach() {
+    io = new MockIo
+    game = Game()
+    cli = new Cli(game, io)
   }
 
   describe("promptMove") {
     it("displays a move prompt") {
-      val io = new MockIo
-      val cli = new Cli(new Game, io)
       io.input = List("1")
       cli.promptMove
 
@@ -30,16 +29,12 @@ class CliSpec extends FunSpec {
     }
 
     it("returns the user's input") {
-      val io = new MockIo
-      val cli = new Cli(new Game, io)
       io.input = List("1\n")
 
       expectResult(1) (cli.promptMove)
     }
 
     it("prints an error and tries again for invalid input") {
-      val io = new MockIo
-      val cli = new Cli(new Game, io)
       io.input = List("a\n", "1\n")
 
       expectResult(1) (cli.promptMove)
@@ -47,9 +42,17 @@ class CliSpec extends FunSpec {
     }
   }
 
-  //describe("outputBoard") {
-    //val io = new MockIO
-    //val cli = new Cli(new Game, io)
-    //cli.printBoard
-  //}
+  describe("printBoard") {
+    it("prints a formatted board") {
+      cli.printBoard
+
+      val printedBoard = List(" 1 | 2 | 3 \n",
+                              "---|---|---\n",
+                              " 4 | 5 | 6 \n",
+                              "---|---|---\n",
+                              " 7 | 8 | 9 \n")
+
+      expectResult(printedBoard) (io.output)
+    }
+  }
 }

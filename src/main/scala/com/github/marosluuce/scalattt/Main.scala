@@ -2,19 +2,20 @@ package com.github.marosluuce.scalattt
 
 object Main {
   def main(args: Array[String]) {
-    val cli = new Cli(new Game, new Io)
+    val cli = Cli()
 
     var i = 0
     while(!cli.game.board.gameover) {
-      val move = cli.promptMove
-      cli.game.board.move(move.toInt, symbol(i))
-      cli.io.writeLine(cli.game.board.getBoard.toString)
+      val player = players(i)
+      val move = player.requestMove(cli.promptMove _)
+      cli.game.board.move(move.toInt, player.symbol)
+      cli.printBoard
       i += 1
     }
   }
 
-  def symbol(i: Int) = i match {
-    case i if i % 2 == 0 => "x"
-    case _ => "o"
+  def players(i: Int) = i match {
+    case i if i % 2 == 0 => Player("x")
+    case _ => Player("o")
   }
 }

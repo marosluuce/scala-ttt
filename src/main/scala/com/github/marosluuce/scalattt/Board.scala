@@ -2,6 +2,8 @@ package com.github.marosluuce.scalattt
 
 object Board {
   val emptySquare = " "
+
+  def apply() = new Board
 }
 
 class Board {
@@ -29,6 +31,11 @@ class Board {
   def gameover = full || winner.nonEmpty
 
   def draw = full && gameover
+
+  def formatted = squares.zipWithIndex.map {
+    case (sym, _) if sym != Board.emptySquare => sym
+    case (_, index) => s"${index+1}"
+  }
 
   private[this] def squareIsEmpty(index: Int) = squares(index) == Board.emptySquare
 

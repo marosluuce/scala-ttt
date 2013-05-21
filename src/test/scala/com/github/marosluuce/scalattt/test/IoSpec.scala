@@ -4,13 +4,19 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
 import org.scalatest.FunSpec
+import org.scalatest.BeforeAndAfterEach
 
 import com.github.marosluuce.scalattt.Io
 
-class IoSpec extends FunSpec {
+class IoSpec extends FunSpec with BeforeAndAfterEach{
+  var io: Io = _
+
+  override def beforeEach {
+    io = Io()
+  }
+
   describe("getLine") {
     it("gets a line of input from the console") {
-      val io = new Io
       val input = new ByteArrayInputStream("lol".getBytes)
       Console.setIn(input)
 
@@ -20,7 +26,6 @@ class IoSpec extends FunSpec {
 
   describe("getInt") {
     it("gets an int from the console") {
-      val io = new Io
       val input = new ByteArrayInputStream("1111\n".getBytes)
       Console.setIn(input)
 
@@ -28,7 +33,6 @@ class IoSpec extends FunSpec {
     }
 
     it("throws an exeption for invalid input") {
-      val io = new Io
       val input = new ByteArrayInputStream("a\n".getBytes)
       Console.setIn(input)
 
@@ -38,7 +42,6 @@ class IoSpec extends FunSpec {
 
   describe("write") {
     it("writes text to the console") {
-      val io = new Io
       val output = new ByteArrayOutputStream
       Console.setOut(output)
       io.write("lol")
@@ -49,7 +52,6 @@ class IoSpec extends FunSpec {
 
   describe("writeLine") {
     it("writes a line to the console") {
-      val io = new Io
       val output = new ByteArrayOutputStream
       Console.setOut(output)
       io.writeLine("lol")
