@@ -6,10 +6,11 @@ object Cli {
   val playerOneSymbol = "x"
   val playerTwoSymbol = "o"
   val movePrompt = "Enter your move: "
+  val invalidMove = "Invalid move!"
   val invalidInput = "Invalid input!"
   val boardRowLength = 3
-  val boardRow = " %s | %s | %s "
-  val boardDividor = "---|---|---"
+  val boardRow = " %s | %s | %s \n"
+  val boardDivider = "---|---|---\n"
 
   def apply() = new Cli(Game(), Io())
 }
@@ -24,22 +25,28 @@ class Cli(val game: Game, val io: Io) {
 
   def run = while (!game.gameover) (takeTurn)
 
-  def takeTurn = {
-    game.move(game.currentPlayer.requestMove, game.currentPlayer.symbol)
-    printBoard
-  }
+  def takeTurn = turn(() => game.move(game.currentPlayer.requestMove,
+                                      game.currentPlayer.symbol))
 
   def promptMove = promptAndValidateInput(io.getInt _, Cli.movePrompt)
 
-  def printBoard {
-    val iterator = game.formattedBoard.grouped(Cli.boardRowLength)
+  def formattedBoard = {
+    game.boardForPrint.grouped(Cli.boardRowLength).map {
+      case Vector(a, b, c) => Cli.boardRow.format(a, b, c)
+    }.mkString(Cli.boardDivider)
+  }
 
-    while (iterator.hasNext) {
-      iterator.next match {
-        case Vector(a, b, c) =>
-          io.writeLine(Cli.boardRow.format(a, b, c))
-          if (iterator.hasNext) { io.writeLine(Cli.boardDividor) }
-      }
+  def printBoard {
+    io.write(formattedBoard)
+  }
+
+  private[this] def turn(move: () => Unit): Unit = {
+    printBoard
+    Try(move()) match {
+      case Failure(e: InvalidMoveException) =>
+        io.writeLine(Cli.invalidMove)
+        turn(move)
+      case _ =>
     }
   }
 

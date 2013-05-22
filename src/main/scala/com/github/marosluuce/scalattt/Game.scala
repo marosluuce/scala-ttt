@@ -7,7 +7,7 @@ object Game {
 class Game(val board: Board) {
   var players = Vector[Player]()
 
-  def formattedBoard = board.formatted
+  def boardForPrint = board.formatted
 
   def availableMoves = board.availableMoves
 

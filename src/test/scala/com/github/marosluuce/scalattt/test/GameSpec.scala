@@ -17,13 +17,13 @@ class GameSpec extends FunSpec with BeforeAndAfterEach {
     game = new Game(board)
   }
 
-  describe("formattedBoard") {
-    it("is a formatted copy of the board") {
+  describe("boardForPrint") {
+    it("is a copy of the board ready for printing") {
       val mockBoard = new MockBoard
       game = new Game(mockBoard)
 
       mockBoard.formattedBoard = Vector("a", "b", "c")
-      expectResult(mockBoard.formatted) (game.formattedBoard)
+      expectResult(mockBoard.formatted) (game.boardForPrint)
     }
   }
 
@@ -83,7 +83,7 @@ class GameSpec extends FunSpec with BeforeAndAfterEach {
   }
 
   describe("currentPlayer") {
-    it("is player one if board.movesMade is even") {
+    it("is player one if the number of moves made is even") {
       val strategy = () => 1
       val p1 = new Player("x", strategy)
       val p2 = new Player("o", strategy)
@@ -92,7 +92,7 @@ class GameSpec extends FunSpec with BeforeAndAfterEach {
       expectResult(p1) (game.currentPlayer)
     }
 
-    it("is player two if board.movesMade is even") {
+    it("is player two if the number of moves made is even") {
       val strategy = () => 1
       val p1 = new Player("x", strategy)
       val p2 = new Player("o", strategy)

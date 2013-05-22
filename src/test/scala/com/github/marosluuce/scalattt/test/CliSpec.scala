@@ -50,13 +50,27 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
   }
 
   describe("takeTurn") {
-    it("makes a move and draws the board") {
-      io.input = List("1\n")
-      game.setPlayers(Player("x", cli.promptMove _), Player("o", cli.promptMove _))
+    it("prints the board before making a move") {
+      game.setPlayers(Player("x", () => 1), Player("o", () => 1))
+      val initialBoard = cli.formattedBoard
+      cli.takeTurn
+
+      assert(io.output.contains(initialBoard))
+    }
+
+    it("has the current player make a move") {
+      game.setPlayers(Player("x", () => 1), Player("o", () => 1))
       cli.takeTurn
 
       expectResult("x") (game.board.squares(0))
-      assert(io.output.contains(Cli.boardRow.format("x", "2", "3")+"\n"))
+    }
+
+    it("prints an error and takes another turn if it catches an invalid move exception") {
+      game.setPlayers(cli.humanPlayer("x"), Player("o", () => 1))
+      io.input = List("11111", "1")
+      cli.takeTurn
+
+      assert(io.output.contains(Cli.invalidMove+"\n"))
     }
   }
 
@@ -82,17 +96,17 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
     }
   }
 
+  describe("formattedBoard") {
+    it("formats the board for printing") {
+      val formattedBoard = " 1 | 2 | 3 \n---|---|---\n 4 | 5 | 6 \n---|---|---\n 7 | 8 | 9 \n"
+      expectResult(formattedBoard) (cli.formattedBoard)
+    }
+  }
+
   describe("printBoard") {
     it("prints a formatted board") {
       cli.printBoard
-
-      val printedBoard = List(" 1 | 2 | 3 \n",
-                              "---|---|---\n",
-                              " 4 | 5 | 6 \n",
-                              "---|---|---\n",
-                              " 7 | 8 | 9 \n")
-
-      expectResult(printedBoard) (io.output)
+      assert(io.output.contains(cli.formattedBoard))
     }
   }
 }
