@@ -27,6 +27,30 @@ class GameSpec extends FunSpec with BeforeAndAfterEach {
     }
   }
 
+  describe("availableMoves") {
+    it("is the board's available squares") {
+      expectResult(board.availableMoves) (game.availableMoves)
+    }
+  }
+
+  describe("gameover") {
+    it("is the board's gameover") {
+      expectResult(board.gameover) (game.gameover)
+    }
+  }
+
+  describe("draw") {
+    it("is the board's draw") {
+      expectResult(board.draw) (game.draw)
+    }
+  }
+
+  describe("winner") {
+    it("is the board's winner") {
+      expectResult(board.winner) (game.winner)
+    }
+  }
+
   describe("move") {
     it("makes a move if it is valid") {
       game.move(1, "x")
@@ -38,10 +62,20 @@ class GameSpec extends FunSpec with BeforeAndAfterEach {
     }
   }
 
+  describe("undoMove") {
+    it("undoes a move") {
+      game.move(1, "x")
+      game.undoMove(1)
+
+      assert(game.availableMoves.contains(1))
+    }
+  }
+
   describe("setPlayers") {
     it("sets the players to the passed in players") {
-      val p1 = new Player("x")
-      val p2 = new Player("o")
+      val strategy = () => 1
+      val p1 = new Player("x", strategy)
+      val p2 = new Player("o", strategy)
       game.setPlayers(p1, p2)
 
       expectResult(Vector(p1, p2)) (game.players)
@@ -50,16 +84,18 @@ class GameSpec extends FunSpec with BeforeAndAfterEach {
 
   describe("currentPlayer") {
     it("is player one if board.movesMade is even") {
-      val p1 = new Player("x")
-      val p2 = new Player("o")
+      val strategy = () => 1
+      val p1 = new Player("x", strategy)
+      val p2 = new Player("o", strategy)
       game.setPlayers(p1, p2)
 
       expectResult(p1) (game.currentPlayer)
     }
 
     it("is player two if board.movesMade is even") {
-      val p1 = new Player("x")
-      val p2 = new Player("o")
+      val strategy = () => 1
+      val p1 = new Player("x", strategy)
+      val p2 = new Player("o", strategy)
       game.setPlayers(p1, p2)
       game.move(1, "x")
 

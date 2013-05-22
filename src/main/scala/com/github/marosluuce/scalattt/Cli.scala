@@ -3,6 +3,8 @@ package com.github.marosluuce.scalattt
 import scala.util.{Try, Success, Failure}
 
 object Cli {
+  val playerOneSymbol = "x"
+  val playerTwoSymbol = "o"
   val movePrompt = "Enter your move: "
   val invalidInput = "Invalid input!"
   val boardRowLength = 3
@@ -11,25 +13,23 @@ object Cli {
 
   def apply() = new Cli(Game(), Io())
 }
-    //var i = 0
-    //while(!cli.game.board.gameover) {
-      //val player = players(i)
-      //val move = player.requestMove(cli.promptMove _)
-      //cli.game.board.move(move.toInt, player.symbol)
-      //cli.printBoard
-      //i += 1
-    //}
 
 class Cli(val game: Game, val io: Io) {
-  //def takeTurn = {
-    //val player = new Player("x")
-    //game.move(player.requestMove(promptMove _), player.symbol)
-    //printBoard
-  //}
+  val aiStrategy = () => { Ai.hard(game) }
+  val humanStrategy = promptMove _
 
-  def promptMove = {
-    promptAndValidateInput(io.getInt _, Cli.movePrompt)
+  def aiPlayer(symbol: String) = Player(symbol, aiStrategy)
+
+  def humanPlayer(symbol: String) = Player(symbol, humanStrategy)
+
+  def run = while (!game.gameover) (takeTurn)
+
+  def takeTurn = {
+    game.move(game.currentPlayer.requestMove, game.currentPlayer.symbol)
+    printBoard
   }
+
+  def promptMove = promptAndValidateInput(io.getInt _, Cli.movePrompt)
 
   def printBoard {
     val iterator = game.formattedBoard.grouped(Cli.boardRowLength)

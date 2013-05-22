@@ -5,16 +5,26 @@ object Game {
 }
 
 class Game(val board: Board) {
-  var players: Vector[Player] = Vector()
+  var players = Vector[Player]()
 
   def formattedBoard = board.formatted
+
+  def availableMoves = board.availableMoves
+
+  def gameover = board.gameover
+
+  def draw = board.draw
+
+  def winner = board.winner
 
   def move(square: Int, symbol: String) = board.validMove(square) match {
     case true => board.move(square, symbol)
     case _ => throw new InvalidMoveException
   }
 
-  def setPlayers(p1: Player, p2: Player) = players = Vector(p1, p2)
+  def undoMove(square: Int) = board.undoMove(square)
+
+  def setPlayers(playerOne: Player, playerTwo: Player) = players = Vector(playerOne, playerTwo)
 
   def currentPlayer = board.movesMade match {
     case count if count % 2 == 0 => players.head

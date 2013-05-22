@@ -30,12 +30,12 @@ class BoardSpec extends FunSpec with BeforeAndAfterEach {
     }
   }
 
-  describe("getAvailableSquares") {
-    it("gets the available squares") {
-      expectResult(Vector(1, 2, 3, 4, 5, 6, 7, 8, 9)) (board.getAvailableSquares)
+  describe("availableMoves") {
+    it("gets the available moves") {
+      expectResult(Vector(1, 2, 3, 4, 5, 6, 7, 8, 9)) (board.availableMoves)
 
       board.move(1, "x")
-      expectResult(Vector(2, 3, 4, 5, 6, 7, 8, 9)) (board.getAvailableSquares)
+      expectResult(Vector(2, 3, 4, 5, 6, 7, 8, 9)) (board.availableMoves)
     }
   }
 

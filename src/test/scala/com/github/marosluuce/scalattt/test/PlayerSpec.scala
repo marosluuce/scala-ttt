@@ -6,10 +6,11 @@ import org.scalatest.BeforeAndAfterEach
 import com.github.marosluuce.scalattt.Player
 
 class PlayerSpec extends FunSpec with BeforeAndAfterEach {
+  val strategy = () => 1
   var player: Player = _
 
   override def beforeEach {
-    player = Player("x")
+    player = Player("x", strategy)
   }
 
   it("has a symbol") {
@@ -18,7 +19,7 @@ class PlayerSpec extends FunSpec with BeforeAndAfterEach {
 
   describe("requestMove") {
     it("takes a function that gets a move") {
-      expectResult(1) (player.requestMove(() => 1))
+      expectResult(1) (player.requestMove)
     }
   }
 }

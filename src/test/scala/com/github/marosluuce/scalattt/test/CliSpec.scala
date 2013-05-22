@@ -6,6 +6,7 @@ import org.scalatest.BeforeAndAfterEach
 import com.github.marosluuce.scalattt.Cli
 import com.github.marosluuce.scalattt.Game
 import com.github.marosluuce.scalattt.Io
+import com.github.marosluuce.scalattt.Player
 
 import com.github.marosluuce.scalattt.test.mock.MockIo
 
@@ -20,20 +21,44 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
     cli = new Cli(game, io)
   }
 
-  //describe("takeTurn") {
-    //it("makes a move and draws the board") {
-      //io.input = List("1")
-      //cli.takeTurn
+  describe("aiPlayer") {
+    it("creates a player with a symbol and an ai strategy") {
+      val player = cli.aiPlayer("x")
 
-      //expectResult("x") (game.board.squares(0))
-      //println(io.output)
-      //assert(io.output.contains(Cli.boardRow.format("x", "2", "3")))
-    //}
-  //}
+      expectResult("x") (player.symbol)
+      expectResult(cli.aiStrategy) (player.strategy)
+    }
+  }
 
-  //describe("setPlayers") {
-    //it("")
-  //}
+  describe("humanPlayer") {
+    it("creates a player with a symbol and a human strategy") {
+      val player = cli.humanPlayer("x")
+
+      expectResult("x") (player.symbol)
+      expectResult(cli.humanStrategy) (player.strategy)
+    }
+  }
+
+  describe("run") {
+    it("is game over when the game is finished") {
+      val strategy = () => game.availableMoves.head
+      game.setPlayers(Player("x", strategy), Player("o", strategy))
+      cli.run
+
+      assert(game.gameover, "The game is not over")
+    }
+  }
+
+  describe("takeTurn") {
+    it("makes a move and draws the board") {
+      io.input = List("1\n")
+      game.setPlayers(Player("x", cli.promptMove _), Player("o", cli.promptMove _))
+      cli.takeTurn
+
+      expectResult("x") (game.board.squares(0))
+      assert(io.output.contains(Cli.boardRow.format("x", "2", "3")+"\n"))
+    }
+  }
 
   describe("promptMove") {
     it("displays a move prompt") {

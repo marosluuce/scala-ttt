@@ -15,14 +15,14 @@ class Board {
 
   def getBoard = squares.toVector
 
-  def getAvailableSquares = {
+  def availableMoves = {
     (Vector[Int]() /: squares.zipWithIndex) {
       case (acc, (Board.emptySquare, index)) => acc ++ Vector(index+1)
       case (acc, _) => acc
     }
   }
 
-  def validMove(square: Int) = getAvailableSquares.contains(square)
+  def validMove(square: Int) = availableMoves.contains(square)
 
   def full = !squares.contains(Board.emptySquare)
 
