@@ -21,6 +21,20 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
     cli = new Cli(game, io)
   }
 
+  describe("playerSelectMenu") {
+    it("is the player's options and a prompt") {
+      val menu = Cli.menuAndPrompt.format(Cli.playerMenuOptions, Cli.menuPrompt)
+      expectResult(menu) (Cli.playerSelectMenu)
+    }
+  }
+
+  describe("playAganMenu") {
+    it("is the options and a prompt") {
+      val menu = Cli.menuAndPrompt.format(Cli.playAgainOptions, Cli.menuPrompt)
+      expectResult(menu) (Cli.playAgainMenu)
+    }
+  }
+
   describe("aiPlayer") {
     it("creates a player with a symbol and an ai strategy") {
       val player = cli.aiPlayer("x")
@@ -74,17 +88,36 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
     }
   }
 
+  describe("promptPlayerChoice") {
+    it("displays a player choice prompt") {
+      io.input = List("1")
+      cli.promptPlayerChoice
+
+      expectResult(Cli.playerSelectMenu) (io.output.head)
+    }
+    it("returns the user's input") {
+      io.input = List("1")
+      expectResult(1) (cli.promptPlayerChoice)
+    }
+
+    it("prints an error and tries again for invalid input") {
+      io.input = List("a\n", "1\n")
+
+      expectResult(1) (cli.promptPlayerChoice)
+      assert(io.output.contains(Cli.invalidInput + "\n"), "Failed to print error message")
+    }
+  }
+
   describe("promptMove") {
     it("displays a move prompt") {
       io.input = List("1")
       cli.promptMove
 
-      assert(io.output.contains(Cli.movePrompt))
+      expectResult(Cli.movePrompt) (io.output.head)
     }
 
     it("returns the user's input") {
-      io.input = List("1\n")
-
+      io.input = List("1")
       expectResult(1) (cli.promptMove)
     }
 
@@ -92,6 +125,27 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
       io.input = List("a\n", "1\n")
 
       expectResult(1) (cli.promptMove)
+      assert(io.output.contains(Cli.invalidInput + "\n"), "Failed to print error message")
+    }
+  }
+
+  describe("promptPlayAgain") {
+    it("displays a prompt to play again") {
+      io.input = List("1")
+      cli.promptPlayAgain
+
+      expectResult(Cli.playAgainMenu) (io.output.head)
+    }
+
+    it("returns the user's input") {
+      io.input = List("1")
+      expectResult(1) (cli.promptPlayAgain)
+    }
+
+    it("prints an error and tries again for invalid input") {
+      io.input = List("a\n", "1\n")
+
+      expectResult(1) (cli.promptPlayAgain)
       assert(io.output.contains(Cli.invalidInput + "\n"), "Failed to print error message")
     }
   }
@@ -107,6 +161,24 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
     it("prints a formatted board") {
       cli.printBoard
       assert(io.output.contains(cli.formattedBoard))
+    }
+  }
+
+  describe("printOutcome") {
+    it("prints the board first") {
+      cli.printOutcome
+      expectResult(cli.formattedBoard) (io.output.head)
+    }
+
+    it("prints the win message if there is a winner") {
+      game.board.squares = Vector.fill(9)("x")
+      cli.printOutcome
+      assert(io.output.contains(Cli.winMessage.format("x")+"\n"), "Winner was not printed")
+    }
+
+    it("prints the draw message otherwise") {
+      cli.printOutcome
+      assert(io.output.contains(Cli.drawMessage+"\n"), "Draw was not printed")
     }
   }
 }
