@@ -5,6 +5,7 @@ import org.scalatest.BeforeAndAfterEach
 
 import com.github.marosluuce.scalattt.Cli
 import com.github.marosluuce.scalattt.Game
+import com.github.marosluuce.scalattt.InvalidChoiceException
 import com.github.marosluuce.scalattt.Io
 import com.github.marosluuce.scalattt.Player
 
@@ -54,6 +55,14 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
   }
 
   describe("run") {
+    it("prints the greeting first") {
+      val strategy = () => game.availableMoves.head
+      game.setPlayers(Player("x", strategy), Player("o", strategy))
+      cli.run
+
+      expectResult(Cli.greeting) (io.output.head)
+    }
+
     it("is game over when the game is finished") {
       val strategy = () => game.availableMoves.head
       game.setPlayers(Player("x", strategy), Player("o", strategy))
@@ -61,10 +70,12 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
 
       assert(game.gameover, "The game is not over")
     }
+
+    //it("")
   }
 
   describe("takeTurn") {
-    it("prints the board before making a move") {
+    it("prints the board first") {
       game.setPlayers(Player("x", () => 1), Player("o", () => 1))
       val initialBoard = cli.formattedBoard
       cli.takeTurn
@@ -88,22 +99,113 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
     }
   }
 
-  describe("promptPlayerChoice") {
+  describe("runPlayerSelectMenu") {
+    it("displays the menu") {
+      io.input = List("1")
+      cli.runPlayerSelectMenu
+      expectResult(Cli.playerSelectMenu) (io.output.head)
+    }
+
+    it("creates players if a valid choice is entered") {
+      io.input = List("1")
+      cli.runPlayerSelectMenu
+
+      expectResult(cli.humanStrategy) (game.players.head.strategy)
+      expectResult(cli.humanStrategy) (game.players.last.strategy)
+    }
+
+    it("prompts the user again if an invalid choice is made") {
+      io.input = List("100", "2")
+      cli.runPlayerSelectMenu
+
+      expectResult(cli.humanStrategy) (game.players.head.strategy)
+      expectResult(cli.aiStrategy) (game.players.last.strategy)
+    }
+  }
+
+  describe("runPlayAgainMenu") {
+    it("displays the menu") {
+      io.input = List("1")
+      cli.runPlayAgainMenu
+      expectResult(Cli.playAgainMenu) (io.output.head)
+    }
+
+    it("sets the flag when valid choice entered") {
+      io.input = List("1")
+      cli.runPlayAgainMenu
+
+      assert(cli.playAgainFlag)
+    }
+
+    it("prompts the user again if an invalid choice is made") {
+      io.input = List("100", "2")
+      cli.runPlayAgainMenu
+    }
+  }
+
+  describe("playAgain") {
+    it("sets the flag to true if 1") {
+      cli.playAgain(1)
+      assert(cli.playAgainFlag)
+    }
+
+    it("sets the flag to false if 2") {
+      cli.playAgain(2)
+      assert(!cli.playAgainFlag)
+    }
+
+    it("throws an exception for any other input") {
+      intercept[InvalidChoiceException](cli.playAgain(1001))
+    }
+  }
+
+  describe("createPlayers") {
+    it("creates two human players when given 1") {
+      cli.createPlayers(1)
+      expectResult(cli.humanStrategy) (game.players.head.strategy)
+      expectResult(cli.humanStrategy) (game.players.last.strategy)
+    }
+
+    it("creates a human and ai player when given 2") {
+      cli.createPlayers(2)
+      expectResult(cli.humanStrategy) (game.players.head.strategy)
+      expectResult(cli.aiStrategy) (game.players.last.strategy)
+    }
+
+    it("creates an ai and human player when given 3") {
+      cli.createPlayers(3)
+      expectResult(cli.aiStrategy) (game.players.head.strategy)
+      expectResult(cli.humanStrategy) (game.players.last.strategy)
+    }
+
+    it("creates two ai players when given 4") {
+      cli.createPlayers(4)
+      expectResult(cli.aiStrategy) (game.players.head.strategy)
+      expectResult(cli.aiStrategy) (game.players.last.strategy)
+    }
+
+    it("throws an exception when given an invalid choice") {
+      intercept[InvalidChoiceException] (cli.createPlayers(1000))
+    }
+  }
+
+  describe("promptPlayerSelect") {
     it("displays a player choice prompt") {
       io.input = List("1")
-      cli.promptPlayerChoice
+      cli.promptPlayerSelect
 
       expectResult(Cli.playerSelectMenu) (io.output.head)
     }
+
     it("returns the user's input") {
       io.input = List("1")
-      expectResult(1) (cli.promptPlayerChoice)
+      expectResult(1) (cli.promptPlayerSelect)
     }
 
     it("prints an error and tries again for invalid input") {
       io.input = List("a\n", "1\n")
 
-      expectResult(1) (cli.promptPlayerChoice)
+      expectResult(1) (cli.promptPlayerSelect)
       assert(io.output.contains(Cli.invalidInput + "\n"), "Failed to print error message")
     }
   }

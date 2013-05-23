@@ -28,20 +28,49 @@ object Cli {
 class Cli(val game: Game, val io: Io) {
   val aiStrategy = () => Ai.hard(game)
   val humanStrategy = promptMove _
+  var playAgainFlag = false
 
   def aiPlayer(symbol: String) = Player(symbol, aiStrategy)
 
   def humanPlayer(symbol: String) = Player(symbol, humanStrategy)
 
   def run = {
-    while (!game.gameover) (takeTurn)
-    //printOutcome
+    def mainLoop {
+      //runPlayerSelectMenu
+      while (!game.gameover) (takeTurn)
+      //printOutcome
+      //runPlayAgainMenu
+      //playAgainFlag match {
+        //case true => mainLoop
+        //case _ =>
+      //}
+    }
+    io.write(Cli.greeting)
+    mainLoop
   }
 
   def takeTurn = turn(() => game.move(game.currentPlayer.requestMove,
                                       game.currentPlayer.symbol))
 
-  def promptPlayerChoice = promptAndValidateInput(Cli.playerSelectMenu)
+  def runPlayerSelectMenu = runMenu(() => createPlayers(promptPlayerSelect))
+
+  def runPlayAgainMenu = runMenu(() => playAgain(promptPlayAgain))
+
+  def createPlayers(choice: Int) = choice match {
+    case 1 => game.setPlayers(humanPlayer(Cli.playerOneSymbol), humanPlayer(Cli.playerTwoSymbol))
+    case 2 => game.setPlayers(humanPlayer(Cli.playerOneSymbol), aiPlayer(Cli.playerTwoSymbol))
+    case 3 => game.setPlayers(aiPlayer(Cli.playerOneSymbol), humanPlayer(Cli.playerTwoSymbol))
+    case 4 => game.setPlayers(aiPlayer(Cli.playerOneSymbol), aiPlayer(Cli.playerTwoSymbol))
+    case _ => throw new InvalidChoiceException
+  }
+
+  def playAgain(choice: Int) = choice match {
+    case 1 => playAgainFlag = true
+    case 2 => playAgainFlag = false
+    case _ => throw new InvalidChoiceException
+  }
+
+  def promptPlayerSelect = promptAndValidateInput(Cli.playerSelectMenu)
 
   def promptMove = promptAndValidateInput(Cli.movePrompt)
 
@@ -63,12 +92,22 @@ class Cli(val game: Game, val io: Io) {
     }
   }
 
-  private[this] def turn(move: () => Unit): Unit = {
+  private[this] def turn(move: () => Unit) {
     printBoard
+
     Try(move()) match {
       case Failure(e: InvalidMoveException) =>
         io.writeLine(Cli.invalidMove)
         turn(move)
+      case _ =>
+    }
+  }
+
+  private[this] def runMenu(action: () => Unit) {
+    Try(action()) match {
+      case Failure(e: InvalidChoiceException) =>
+        io.writeLine(Cli.invalidInput)
+        runMenu(action)
       case _ =>
     }
   }
