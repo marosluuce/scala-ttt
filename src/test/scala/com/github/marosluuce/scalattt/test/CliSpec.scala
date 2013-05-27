@@ -3,13 +3,16 @@ package com.github.marosluuce.scalattt.test
 import org.scalatest.FunSpec
 import org.scalatest.BeforeAndAfterEach
 
+import com.github.marosluuce.scalattt.Board
 import com.github.marosluuce.scalattt.Cli
 import com.github.marosluuce.scalattt.Game
 import com.github.marosluuce.scalattt.InvalidChoiceException
 import com.github.marosluuce.scalattt.Io
+import com.github.marosluuce.scalattt.Menu
 import com.github.marosluuce.scalattt.Player
 
 import com.github.marosluuce.scalattt.test.mock.MockIo
+import com.github.marosluuce.scalattt.test.mock.MockMenu
 
 class CliSpec extends FunSpec with BeforeAndAfterEach {
   var io: MockIo = _
@@ -24,14 +27,14 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
 
   describe("playerSelectMenu") {
     it("is the player's options and a prompt") {
-      val menu = Cli.menuAndPrompt.format(Cli.playerMenuOptions, Cli.menuPrompt)
+      val menu = Cli.menuAndPrompt.format(Cli.playerSelectTitle, Cli.playerSelectOptions, Cli.menuPrompt)
       expectResult(menu) (Cli.playerSelectMenu)
     }
   }
 
   describe("playAganMenu") {
     it("is the options and a prompt") {
-      val menu = Cli.menuAndPrompt.format(Cli.playAgainOptions, Cli.menuPrompt)
+      val menu = Cli.menuAndPrompt.format(Cli.playAgainTitle, Cli.playAgainOptions, Cli.menuPrompt)
       expectResult(menu) (Cli.playAgainMenu)
     }
   }
@@ -58,20 +61,66 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
     it("prints the greeting first") {
       val strategy = () => game.availableMoves.head
       game.setPlayers(Player("x", strategy), Player("o", strategy))
+      cli.runPlayerSelectMenu = new MockMenu(() => Unit, io)
+      cli.runPlayAgainMenu = new MockMenu(() => Unit, io)
       cli.run
 
-      expectResult(Cli.greeting) (io.output.head)
+      expectResult(Cli.greeting+"\n") (io.output.head)
     }
 
     it("is game over when the game is finished") {
       val strategy = () => game.availableMoves.head
       game.setPlayers(Player("x", strategy), Player("o", strategy))
+      cli.runPlayerSelectMenu = new MockMenu(() => Unit, io)
+      cli.runPlayAgainMenu = new MockMenu(() => Unit, io)
       cli.run
 
       assert(game.gameover, "The game is not over")
     }
 
-    //it("")
+    it("calls the player select menu") {
+      val strategy = () => game.availableMoves.head
+      game.setPlayers(Player("x", strategy), Player("o", strategy))
+      var i = 0
+      cli.runPlayerSelectMenu = new MockMenu(() => i += 1, io)
+      cli.runPlayAgainMenu = new MockMenu(() => Unit, io)
+      cli.run
+
+      expectResult(1) (i)
+    }
+
+    it("prints the outcome of a game") {
+      game.board.squares = Vector("x", "x", "x", " ", " ", " ", " ", " ", " ")
+      cli.runPlayerSelectMenu = new MockMenu(() => Unit, io)
+      cli.runPlayAgainMenu = new MockMenu(() => Unit, io)
+      cli.run
+
+      assert(io.didOutput(cli.formattedBoard))
+      assert(io.didOutput(Cli.winMessage.format("x")))
+    }
+
+    it("calls the play again menu") {
+      val strategy = () => game.availableMoves.head
+      game.setPlayers(Player("x", strategy), Player("o", strategy))
+      var i = 0
+      cli.runPlayerSelectMenu = new MockMenu(() => i += 1, io)
+      cli.runPlayAgainMenu = new MockMenu(() => Unit, io)
+      cli.run
+
+      expectResult(1) (i)
+    }
+
+    it("plays again if the player selected play again in the menu") {
+      val strategy = () => game.availableMoves.head
+      game.setPlayers(Player("x", strategy), Player("o", strategy))
+      var i = 0
+      val again = () => { i += 1; if (i <= 1) { game.reset } }
+      cli.runPlayerSelectMenu = new MockMenu(() => Unit, io)
+      cli.runPlayAgainMenu = new MockMenu(again, io)
+      cli.run
+
+      expectResult(2) (i)
+    }
   }
 
   describe("takeTurn") {
@@ -80,7 +129,14 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
       val initialBoard = cli.formattedBoard
       cli.takeTurn
 
-      assert(io.output.contains(initialBoard))
+      expectResult(initialBoard) (io.output.filter(_!="\n").head)
+    }
+
+    it("prints whose turn it is") {
+      game.setPlayers(Player("x", () => 1), Player("o", () => 1))
+      cli.takeTurn
+
+      assert(io.didOutput(Cli.playersTurn.format("x")))
     }
 
     it("has the current player make a move") {
@@ -95,20 +151,21 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
       io.input = List("11111", "1")
       cli.takeTurn
 
-      assert(io.output.contains(Cli.invalidMove+"\n"))
+      assert(io.didOutput(Cli.invalidMove))
+      expectResult("x") (game.board.squares(0))
     }
   }
 
   describe("runPlayerSelectMenu") {
     it("displays the menu") {
       io.input = List("1")
-      cli.runPlayerSelectMenu
-      expectResult(Cli.playerSelectMenu) (io.output.head)
+      cli.runPlayerSelectMenu()
+      expectResult(Cli.playerSelectMenu) (io.output.filter(_!="\n").head)
     }
 
     it("creates players if a valid choice is entered") {
       io.input = List("1")
-      cli.runPlayerSelectMenu
+      cli.runPlayerSelectMenu()
 
       expectResult(cli.humanStrategy) (game.players.head.strategy)
       expectResult(cli.humanStrategy) (game.players.last.strategy)
@@ -116,7 +173,7 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
 
     it("prompts the user again if an invalid choice is made") {
       io.input = List("100", "2")
-      cli.runPlayerSelectMenu
+      cli.runPlayerSelectMenu()
 
       expectResult(cli.humanStrategy) (game.players.head.strategy)
       expectResult(cli.aiStrategy) (game.players.last.strategy)
@@ -126,32 +183,36 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
   describe("runPlayAgainMenu") {
     it("displays the menu") {
       io.input = List("1")
-      cli.runPlayAgainMenu
-      expectResult(Cli.playAgainMenu) (io.output.head)
+      cli.runPlayAgainMenu()
+      expectResult(Cli.playAgainMenu) (io.output.filter(_!="\n").head)
     }
 
-    it("sets the flag when valid choice entered") {
+    it("resets the game when the user wants to play again") {
       io.input = List("1")
-      cli.runPlayAgainMenu
+      cli.runPlayAgainMenu()
 
-      assert(cli.playAgainFlag)
+      expectResult(Board.emptyBoard) (game.board.squares)
     }
 
-    it("prompts the user again if an invalid choice is made") {
+    it("prints an error message and prompts the user again if an invalid choice is made") {
       io.input = List("100", "2")
-      cli.runPlayAgainMenu
+      cli.runPlayAgainMenu()
+
+      assert(io.didOutput(Cli.invalidChoice))
+      expectResult(Board.emptyBoard) (game.board.squares)
     }
   }
 
   describe("playAgain") {
-    it("sets the flag to true if 1") {
+    it("resets the game if 1") {
+      for(x <- 1 to 9) (game.move(x, "x"))
       cli.playAgain(1)
-      assert(cli.playAgainFlag)
+
+      expectResult(Board.emptyBoard) (game.board.squares)
     }
 
-    it("sets the flag to false if 2") {
-      cli.playAgain(2)
-      assert(!cli.playAgainFlag)
+    it("does nothing if 2") {
+      expectResult(()) (cli.playAgain(2))
     }
 
     it("throws an exception for any other input") {
@@ -189,27 +250,6 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
     }
   }
 
-  describe("promptPlayerSelect") {
-    it("displays a player choice prompt") {
-      io.input = List("1")
-      cli.promptPlayerSelect
-
-      expectResult(Cli.playerSelectMenu) (io.output.head)
-    }
-
-    it("returns the user's input") {
-      io.input = List("1")
-      expectResult(1) (cli.promptPlayerSelect)
-    }
-
-    it("prints an error and tries again for invalid input") {
-      io.input = List("a\n", "1\n")
-
-      expectResult(1) (cli.promptPlayerSelect)
-      assert(io.output.contains(Cli.invalidInput + "\n"), "Failed to print error message")
-    }
-  }
-
   describe("promptMove") {
     it("displays a move prompt") {
       io.input = List("1")
@@ -227,28 +267,7 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
       io.input = List("a\n", "1\n")
 
       expectResult(1) (cli.promptMove)
-      assert(io.output.contains(Cli.invalidInput + "\n"), "Failed to print error message")
-    }
-  }
-
-  describe("promptPlayAgain") {
-    it("displays a prompt to play again") {
-      io.input = List("1")
-      cli.promptPlayAgain
-
-      expectResult(Cli.playAgainMenu) (io.output.head)
-    }
-
-    it("returns the user's input") {
-      io.input = List("1")
-      expectResult(1) (cli.promptPlayAgain)
-    }
-
-    it("prints an error and tries again for invalid input") {
-      io.input = List("a\n", "1\n")
-
-      expectResult(1) (cli.promptPlayAgain)
-      assert(io.output.contains(Cli.invalidInput + "\n"), "Failed to print error message")
+      assert(io.didOutput(Cli.invalidInput), "Failed to print error message")
     }
   }
 
@@ -262,25 +281,25 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
   describe("printBoard") {
     it("prints a formatted board") {
       cli.printBoard
-      assert(io.output.contains(cli.formattedBoard))
+      assert(io.didOutput(cli.formattedBoard))
     }
   }
 
   describe("printOutcome") {
     it("prints the board first") {
       cli.printOutcome
-      expectResult(cli.formattedBoard) (io.output.head)
+      expectResult(cli.formattedBoard) (io.output.filter(_!="\n").head)
     }
 
     it("prints the win message if there is a winner") {
       game.board.squares = Vector.fill(9)("x")
       cli.printOutcome
-      assert(io.output.contains(Cli.winMessage.format("x")+"\n"), "Winner was not printed")
+      assert(io.didOutput(Cli.winMessage.format("x")), "Winner was not printed")
     }
 
     it("prints the draw message otherwise") {
       cli.printOutcome
-      assert(io.output.contains(Cli.drawMessage+"\n"), "Draw was not printed")
+      assert(io.didOutput(Cli.drawMessage), "Draw was not printed")
     }
   }
 }

@@ -13,9 +13,9 @@ class Game(val board: Board) {
 
   def gameover = board.gameover
 
-  def draw = board.draw
-
   def winner = board.winner
+
+  def reset = board.reset
 
   def move(square: Int, symbol: String) = board.validMove(square) match {
     case true => board.move(square, symbol)

@@ -4,23 +4,31 @@ import scala.util.{Try, Success, Failure}
 
 object Cli {
   val greeting = "Welcome to Tic-Tac-Toe!"
-  val playerMenuOptions = "1. Human vs Human\n2. Human vs AI\n3. AI vs Human\n4. AI vs AI"
-  val menuAndPrompt = "%s\n\n%s"
+  val playerSelectTitle = "Player Select"
+  val playerSelectOptions = "1. Human vs Human\n2. Human vs AI\n3. AI vs Human\n4. AI vs AI"
+  val menuAndPrompt = "%s\n\n%s\n\n%s"
   val menuPrompt = "Enter your choice: "
   val drawMessage = "Draw!"
   val winMessage = "%s Won!"
-  val playAgainOptions = "Play again?\n\n1. Yes\n2. No"
+  val playAgainTitle = "Play again?"
+  val playAgainOptions = "1. Yes\n2. No"
   val playerOneSymbol = "x"
   val playerTwoSymbol = "o"
+  val playersTurn = "%s's turn"
   val movePrompt = "Enter your move: "
   val invalidMove = "Invalid move!"
   val invalidInput = "Invalid input!"
+  val invalidChoice = "Invalid choice!"
   val boardRowLength = 3
-  val boardRow = " %s | %s | %s "
-  val boardDivider = "---|---|---"
+  val boardRow = " %s | %s | %s \n"
+  val boardDivider = "---|---|---\n"
 
-  val playerSelectMenu = Cli.menuAndPrompt.format(Cli.playerMenuOptions, Cli.menuPrompt)
-  val playAgainMenu = Cli.menuAndPrompt.format(Cli.playAgainOptions, Cli.menuPrompt)
+  val playerSelectMenu = Cli.menuAndPrompt.format(Cli.playerSelectTitle,
+                                                  Cli.playerSelectOptions,
+                                                  Cli.menuPrompt)
+  val playAgainMenu = Cli.menuAndPrompt.format(Cli.playAgainTitle,
+                                               Cli.playAgainOptions,
+                                               Cli.menuPrompt)
 
   def apply() = new Cli(Game(), Io())
 }
@@ -28,7 +36,8 @@ object Cli {
 class Cli(val game: Game, val io: Io) {
   val aiStrategy = () => Ai.hard(game)
   val humanStrategy = promptMove _
-  var playAgainFlag = false
+  var runPlayerSelectMenu = Menu(Cli.playerSelectMenu, createPlayers(_), io, Cli.invalidChoice)
+  var runPlayAgainMenu = Menu(Cli.playAgainMenu, playAgain(_), io, Cli.invalidChoice)
 
   def aiPlayer(symbol: String) = Player(symbol, aiStrategy)
 
@@ -36,25 +45,20 @@ class Cli(val game: Game, val io: Io) {
 
   def run = {
     def mainLoop {
-      //runPlayerSelectMenu
+      runPlayerSelectMenu()
       while (!game.gameover) (takeTurn)
-      //printOutcome
-      //runPlayAgainMenu
-      //playAgainFlag match {
-        //case true => mainLoop
-        //case _ =>
-      //}
+      printOutcome
+      runPlayAgainMenu()
+      game.gameover match {
+        case false => mainLoop
+        case _ =>
+      }
     }
-    io.write(Cli.greeting)
+    io.writeLine(Cli.greeting)
     mainLoop
   }
 
-  def takeTurn = turn(() => game.move(game.currentPlayer.requestMove,
-                                      game.currentPlayer.symbol))
-
-  def runPlayerSelectMenu = runMenu(() => createPlayers(promptPlayerSelect))
-
-  def runPlayAgainMenu = runMenu(() => playAgain(promptPlayAgain))
+  def takeTurn = turn(() => game.move(game.currentPlayer.requestMove, game.currentPlayer.symbol))
 
   def createPlayers(choice: Int) = choice match {
     case 1 => game.setPlayers(humanPlayer(Cli.playerOneSymbol), humanPlayer(Cli.playerTwoSymbol))
@@ -65,27 +69,24 @@ class Cli(val game: Game, val io: Io) {
   }
 
   def playAgain(choice: Int) = choice match {
-    case 1 => playAgainFlag = true
-    case 2 => playAgainFlag = false
+    case 1 => game.reset
+    case 2 =>
     case _ => throw new InvalidChoiceException
   }
 
-  def promptPlayerSelect = promptAndValidateInput(Cli.playerSelectMenu)
-
   def promptMove = promptAndValidateInput(Cli.movePrompt)
-
-  def promptPlayAgain = promptAndValidateInput(Cli.playAgainMenu)
 
   def formattedBoard = {
     game.boardForPrint.grouped(Cli.boardRowLength).map {
-      case Vector(a, b, c) => Cli.boardRow.format(a, b, c) + "\n"
-    }.mkString(Cli.boardDivider + "\n")
+      case Vector(a, b, c) => Cli.boardRow.format(a, b, c)
+    }.mkString(Cli.boardDivider)
   }
 
-  def printBoard = io.write(formattedBoard)
+  def printBoard = { io.writeBlankLine; io.write(formattedBoard) }
 
   def printOutcome = {
     printBoard
+    io.writeBlankLine
     game.winner match {
       case Some(symbol) => io.writeLine(Cli.winMessage.format(symbol))
       case None => io.writeLine(Cli.drawMessage)
@@ -94,20 +95,13 @@ class Cli(val game: Game, val io: Io) {
 
   private[this] def turn(move: () => Unit) {
     printBoard
+    io.writeBlankLine
+    io.writeLine(Cli.playersTurn.format(game.currentPlayer.symbol))
 
     Try(move()) match {
       case Failure(e: InvalidMoveException) =>
         io.writeLine(Cli.invalidMove)
         turn(move)
-      case _ =>
-    }
-  }
-
-  private[this] def runMenu(action: () => Unit) {
-    Try(action()) match {
-      case Failure(e: InvalidChoiceException) =>
-        io.writeLine(Cli.invalidInput)
-        runMenu(action)
       case _ =>
     }
   }

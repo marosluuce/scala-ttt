@@ -2,12 +2,15 @@ package com.github.marosluuce.scalattt
 
 object Board {
   val emptySquare = " "
+  val emptyBoard = Vector.fill(9)(Board.emptySquare)
 
   def apply() = new Board
 }
 
 class Board {
-  var squares = Vector.fill(9)(Board.emptySquare)
+  var squares = Board.emptyBoard
+
+  def reset = squares = Board.emptyBoard
 
   def move(square: Int, value: String) = squares = squares.updated(square-1, value)
 
@@ -29,8 +32,6 @@ class Board {
   def winner = Option(winnerIs)
 
   def gameover = full || winner.nonEmpty
-
-  def draw = full && gameover
 
   def formatted = squares.zipWithIndex.map {
     case (sym, _) if sym != Board.emptySquare => sym

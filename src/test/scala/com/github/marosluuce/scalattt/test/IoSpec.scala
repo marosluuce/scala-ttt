@@ -15,15 +15,6 @@ class IoSpec extends FunSpec with BeforeAndAfterEach{
     io = Io()
   }
 
-  describe("getLine") {
-    it("gets a line of input from the console") {
-      val input = new ByteArrayInputStream("lol".getBytes)
-      Console.setIn(input)
-
-      expectResult("lol") (io.getLine)
-    }
-  }
-
   describe("getInt") {
     it("gets an int from the console") {
       val input = new ByteArrayInputStream("1111\n".getBytes)
@@ -47,6 +38,16 @@ class IoSpec extends FunSpec with BeforeAndAfterEach{
       io.write("lol")
 
       expectResult("lol") (output.toString)
+    }
+  }
+
+  describe("writeBlankLine") {
+    it("writes a blank line") {
+      val output = new ByteArrayOutputStream
+      Console.setOut(output)
+      io.writeBlankLine
+
+      expectResult("\n") (output.toString)
     }
   }
 

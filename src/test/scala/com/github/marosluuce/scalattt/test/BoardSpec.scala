@@ -12,6 +12,13 @@ class BoardSpec extends FunSpec with BeforeAndAfterEach {
     board = Board()
   }
 
+  describe("reset") {
+    it("resets the board") {
+      board.reset
+      expectResult(Board.emptyBoard) (board.squares)
+    }
+  }
+
   describe("move") {
     it("moves by setting a square to a value") {
       expectResult(" ") (board.squares(0))
@@ -101,23 +108,6 @@ class BoardSpec extends FunSpec with BeforeAndAfterEach {
     it("is false if there is no winner and the board is not full") {
       board.squares = Vector("x", "x", "o", " ", " ", " ", " ", " ", " ")
       expectResult(false) (board.gameover)
-    }
-  }
-
-  describe("draw") {
-    it("is false if the board is not full") {
-      board.squares = Vector.fill(9)(" ")
-      expectResult(false) (board.draw)
-    }
-
-    it("is false if there is a winner") {
-      board.squares = Vector("x", "x", "x", " ", " ", " ", " ", " ", " ")
-      expectResult(false) (board.draw)
-    }
-
-    it("is true if the board is full and there is no winner") {
-      board.squares = Vector("x", "o", "x", "x", "o", "x", "o", "x", "o")
-      expectResult(true) (board.draw)
     }
   }
 

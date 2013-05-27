@@ -39,15 +39,18 @@ class GameSpec extends FunSpec with BeforeAndAfterEach {
     }
   }
 
-  describe("draw") {
-    it("is the board's draw") {
-      expectResult(board.draw) (game.draw)
-    }
-  }
-
   describe("winner") {
     it("is the board's winner") {
       expectResult(board.winner) (game.winner)
+    }
+  }
+
+  describe("reset") {
+    it("resets the board") {
+      for(x <- 1 to 9) (board.move(x, "x"))
+      game.reset
+
+      expectResult(Board.emptyBoard) (board.squares)
     }
   }
 
