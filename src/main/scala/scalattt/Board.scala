@@ -1,4 +1,4 @@
-package com.github.marosluuce.scalattt
+package scalattt
 
 object Board {
   val emptySquare = " "

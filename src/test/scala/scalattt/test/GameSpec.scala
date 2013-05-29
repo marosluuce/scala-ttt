@@ -1,12 +1,12 @@
-package com.github.marosluuce.scalattt.test
+package scalattt.test
 
 import org.scalatest.FunSpec
 import org.scalatest.BeforeAndAfterEach
 
-import com.github.marosluuce.scalattt.Board
-import com.github.marosluuce.scalattt.Game
-import com.github.marosluuce.scalattt.InvalidMoveException
-import com.github.marosluuce.scalattt.Player
+import scalattt.Board
+import scalattt.Game
+import scalattt.InvalidMoveException
+import scalattt.Player
 
 class GameSpec extends FunSpec with BeforeAndAfterEach {
   var board: Board = _
@@ -14,16 +14,12 @@ class GameSpec extends FunSpec with BeforeAndAfterEach {
 
   override def beforeEach {
     board = Board()
-    game = new Game(board)
+    game = Game(board)
   }
 
   describe("boardForPrint") {
     it("is a copy of the board ready for printing") {
-      val mockBoard = new MockBoard
-      game = new Game(mockBoard)
-
-      mockBoard.formattedBoard = Vector("a", "b", "c")
-      expectResult(mockBoard.formatted) (game.boardForPrint)
+      expectResult(board.formatted) (game.boardForPrint)
     }
   }
 
@@ -105,10 +101,4 @@ class GameSpec extends FunSpec with BeforeAndAfterEach {
       expectResult(p2) (game.currentPlayer)
     }
   }
-}
-
-class MockBoard extends Board {
-  var formattedBoard = Vector[String]()
-
-  override def formatted = formattedBoard
 }

@@ -1,12 +1,12 @@
-package com.github.marosluuce.scalattt.test
+package scalattt.test
 
 import org.scalatest.FunSpec
 import org.scalatest.BeforeAndAfterEach
 
-import com.github.marosluuce.scalattt.InvalidChoiceException
-import com.github.marosluuce.scalattt.Menu
+import scalattt.InvalidChoiceException
+import scalattt.Menu
 
-import com.github.marosluuce.scalattt.test.mock.MockIo
+import scalattt.test.mock.MockIo
 
 class MenuSpec extends FunSpec with BeforeAndAfterEach {
   var i: Int = _

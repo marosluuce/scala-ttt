@@ -1,7 +1,7 @@
-package com.github.marosluuce.scalattt
+package scalattt
 
 object Game {
-  def apply() = new Game(new Board)
+  def apply(board: Board) = new Game(board)
 }
 
 class Game(val board: Board) {

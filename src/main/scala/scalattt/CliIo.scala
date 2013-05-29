@@ -1,10 +1,10 @@
-package com.github.marosluuce.scalattt
+package scalattt
 
-object Io {
-  def apply() = new Io
+object CliIo {
+  def apply() = new CliIo
 }
 
-class Io {
+class CliIo extends Io {
   def getInt = readInt
 
   def write(text: String) = print(text)

@@ -1,4 +1,4 @@
-package com.github.marosluuce.scalattt
+package scalattt
 
 import scala.util.{Try, Success, Failure}
 
@@ -30,7 +30,7 @@ object Cli {
                                                Cli.playAgainOptions,
                                                Cli.menuPrompt)
 
-  def apply() = new Cli(Game(), Io())
+  def apply(game: Game, io: Io) = new Cli(game, io)
 }
 
 class Cli(val game: Game, val io: Io) {

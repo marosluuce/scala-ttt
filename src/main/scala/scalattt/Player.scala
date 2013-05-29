@@ -1,4 +1,4 @@
-package com.github.marosluuce.scalattt
+package scalattt
 
 object Player {
   def apply(symbol: String, strategy: () => Int) = new Player(symbol, strategy)

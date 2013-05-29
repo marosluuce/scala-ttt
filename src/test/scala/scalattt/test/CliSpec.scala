@@ -1,18 +1,18 @@
-package com.github.marosluuce.scalattt.test
+package scalattt.test
 
 import org.scalatest.FunSpec
 import org.scalatest.BeforeAndAfterEach
 
-import com.github.marosluuce.scalattt.Board
-import com.github.marosluuce.scalattt.Cli
-import com.github.marosluuce.scalattt.Game
-import com.github.marosluuce.scalattt.InvalidChoiceException
-import com.github.marosluuce.scalattt.Io
-import com.github.marosluuce.scalattt.Menu
-import com.github.marosluuce.scalattt.Player
+import scalattt.Board
+import scalattt.Cli
+import scalattt.Game
+import scalattt.InvalidChoiceException
+import scalattt.Io
+import scalattt.Menu
+import scalattt.Player
 
-import com.github.marosluuce.scalattt.test.mock.MockIo
-import com.github.marosluuce.scalattt.test.mock.MockMenu
+import scalattt.test.mock.MockIo
+import scalattt.test.mock.MockMenu
 
 class CliSpec extends FunSpec with BeforeAndAfterEach {
   var io: MockIo = _
@@ -21,8 +21,8 @@ class CliSpec extends FunSpec with BeforeAndAfterEach {
 
   override def beforeEach() {
     io = new MockIo
-    game = Game()
-    cli = new Cli(game, io)
+    game = Game(Board())
+    cli = Cli(game, io)
   }
 
   describe("playerSelectMenu") {

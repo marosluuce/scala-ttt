@@ -1,9 +1,9 @@
-package com.github.marosluuce.scalattt.test
+package scalattt.test
 
 import org.scalatest.FunSpec
 import org.scalatest.BeforeAndAfterEach
 
-import com.github.marosluuce.scalattt.Board
+import scalattt.Board
 
 class BoardSpec extends FunSpec with BeforeAndAfterEach {
   var board: Board = _

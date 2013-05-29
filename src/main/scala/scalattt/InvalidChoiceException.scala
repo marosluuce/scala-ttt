@@ -1,3 +1,3 @@
-package com.github.marosluuce.scalattt
+package scalattt
 
 class InvalidChoiceException extends Exception {}

@@ -1,9 +1,9 @@
-package com.github.marosluuce.scalattt.test
+package scalattt.test
 
 import org.scalatest.FunSpec
 import org.scalatest.BeforeAndAfterEach
 
-import com.github.marosluuce.scalattt.Player
+import scalattt.Player
 
 class PlayerSpec extends FunSpec with BeforeAndAfterEach {
   val strategy = () => 1

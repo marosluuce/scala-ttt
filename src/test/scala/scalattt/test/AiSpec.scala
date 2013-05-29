@@ -1,12 +1,12 @@
-package com.github.marosluuce.scalattt.test
+package scalattt.test
 
 import org.scalatest.FunSpec
 import org.scalatest.BeforeAndAfterEach
 
-import com.github.marosluuce.scalattt.Ai
-import com.github.marosluuce.scalattt.Board
-import com.github.marosluuce.scalattt.Game
-import com.github.marosluuce.scalattt.Player
+import scalattt.Ai
+import scalattt.Board
+import scalattt.Game
+import scalattt.Player
 
 class AiSpec extends FunSpec with BeforeAndAfterEach {
   var board: Board = _

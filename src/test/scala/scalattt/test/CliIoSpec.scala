@@ -1,4 +1,4 @@
-package com.github.marosluuce.scalattt.test
+package scalattt.test
 
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -6,13 +6,13 @@ import java.io.ByteArrayOutputStream
 import org.scalatest.FunSpec
 import org.scalatest.BeforeAndAfterEach
 
-import com.github.marosluuce.scalattt.Io
+import scalattt.CliIo
 
-class IoSpec extends FunSpec with BeforeAndAfterEach{
-  var io: Io = _
+class CliIoSpec extends FunSpec with BeforeAndAfterEach{
+  var io: CliIo = _
 
   override def beforeEach {
-    io = Io()
+    io = CliIo()
   }
 
   describe("getInt") {

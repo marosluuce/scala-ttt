@@ -1,4 +1,4 @@
-package com.github.marosluuce.scalattt
+package scalattt
 
 object Ai {
   def hard(game: Game) = negamax(game) match { case (square, _) => square }
