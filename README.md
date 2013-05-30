@@ -3,7 +3,12 @@ scala-ttt
 
 Tic-Tac-Toe in Scala
 
-##Instructions
+Requirements
+------------
+Java 1.6 or higher installed
+
+Instructions
+------------
 ####Install sbt, a simple build tool for Scala
 Mac: `$ brew install sbt`
 
