@@ -25,4 +25,5 @@ Otherwise, check out http://www.scala-sbt.org/
 
 Caveat
 ------
-If scala crashes, or you get an out of memory exception, try running your command again.
+Running `scala test` before compiling, seems to cause an error on my machine.
+If sbt crashes, or you get an out of memory exception, try running the command again.
