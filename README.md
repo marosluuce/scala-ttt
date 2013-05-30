@@ -14,6 +14,9 @@ Mac: `$ brew install sbt`
 
 Otherwise, check out http://www.scala-sbt.org/
 
+###Compile application
+`$ sbt compile`
+
 ####Run tests
 `$ sbt test`
 
