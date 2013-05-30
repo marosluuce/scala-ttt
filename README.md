@@ -27,3 +27,4 @@ Caveat
 ------
 Running `scala test` before compiling, seems to cause an error on my machine.
 If sbt crashes, or you get an out of memory exception, try running the command again.
+It may even be necessary to kill the java process.
