@@ -14,3 +14,7 @@ Otherwise, check out http://www.scala-sbt.org/
 
 ####Run application
 `$ sbt run`
+
+Caveat
+------
+If scala crashes, or you get an out of memory exception, try running your command again.
